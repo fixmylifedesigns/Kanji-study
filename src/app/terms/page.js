@@ -42,8 +42,8 @@ export default function Terms() {
               <h2 className="text-xl font-semibold">2. Use of the App</h2>
               <p>
                 2.1. You must be at least 13 years old to use this App. If you
-                are under 13, you must have your parent's or legal guardian's
-                permission to use the App, in compliance with the Children's
+                are under 13, you must have your parent`&apos;`s or legal guardian`&apos;`s
+                permission to use the App, in compliance with the Children`&apos;`s
                 Online Privacy Protection Act (COPPA).
               </p>
               <p>
@@ -75,7 +75,7 @@ export default function Terms() {
               <h2 className="text-xl font-semibold">4. Google Sign-In</h2>
               <p>
                 4.1. The App uses Google Sign-In for authentication. By using
-                this feature, you agree to Google's Terms of Service.
+                this feature, you agree to Google`&apos;`s Terms of Service.
               </p>
               <p>
                 4.2. We only access the information necessary for authentication
@@ -97,7 +97,7 @@ export default function Terms() {
 
               <h2 className="text-xl font-semibold">6. Disclaimer</h2>
               <p>
-                6.1. The App is provided "as is" without any warranties of any
+                6.1. The App is provided `&apos;`as is`&apos;` without any warranties of any
                 kind, either express or implied, including but not limited to
                 the implied warranties of merchantability and fitness for a
                 particular purpose.

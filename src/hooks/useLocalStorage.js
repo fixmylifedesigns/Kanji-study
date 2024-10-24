@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export function useLocalStorage(key, initialValue = "") {
+export function useLocalStorage(key, initialValue) {
   // Initialize state lazily to avoid issues during SSR
   const [storedValue, setStoredValue] = useState(() => {
     try {
@@ -21,7 +21,7 @@ export function useLocalStorage(key, initialValue = "") {
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
     }
-  }, [key]); // Removed `initialValue` from dependency array
+  }, [key, initialValue]); // Removed `initialValue` from dependency array
 
   const setValue = (value) => {
     try {
