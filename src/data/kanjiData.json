@@ -1,0 +1,169 @@
+{
+  "chapters": [
+    {
+      "chapter_number": 1,
+      "chapter_title": "Number",
+      "kanji_list": [
+        {
+          "kanji": "一",
+          "meaning": "One",
+          "readings": [
+            {
+              "hiragana": "いち",
+              "romaji": "ichi",
+              "example_sentence": "私は 一つ りんごを食べました。",
+              "full_hiragana": "わたしは ひとつ りんごをたべました。",
+              "english_translation": "I ate one apple."
+            },
+            {
+              "hiragana": "ひとつ",
+              "romaji": "hitotsu",
+              "example_sentence": "ひとつ りんごがあります。",
+              "full_hiragana": "ひとつ りんごがあります。",
+              "english_translation": "There is one apple."
+            }
+          ]
+        },
+        {
+          "kanji": "二",
+          "meaning": "Two",
+          "readings": [
+            {
+              "hiragana": "に",
+              "romaji": "ni",
+              "example_sentence": "私は 二つ りんごを食べました。",
+              "full_hiragana": "わたしは ふたつ りんごをたべました。",
+              "english_translation": "I ate two apples."
+            },
+            {
+              "hiragana": "ふたつ",
+              "romaji": "futatsu",
+              "example_sentence": "ふたつ りんごがあります。",
+              "full_hiragana": "ふたつ りんごがあります。",
+              "english_translation": "There are two apples."
+            }
+          ]
+        },
+        {
+          "kanji": "三",
+          "meaning": "Three",
+          "readings": [
+            {
+              "hiragana": "さん",
+              "romaji": "san",
+              "example_sentence": "私は 三つ りんごを食べました。",
+              "full_hiragana": "わたしは みっつ りんごをたべました。",
+              "english_translation": "I ate three apples."
+            },
+            {
+              "hiragana": "みっつ",
+              "romaji": "mittsu",
+              "example_sentence": "みっつ りんごがあります。",
+              "full_hiragana": "みっつ りんごがあります。",
+              "english_translation": "There are three apples."
+            }
+          ]
+        },
+        {
+          "kanji": "四",
+          "meaning": "Four",
+          "readings": [
+            {
+              "hiragana": "し",
+              "romaji": "shi",
+              "example_sentence": "私は 四つ りんごを食べました。",
+              "full_hiragana": "わたしは よっつ りんごをたべました。",
+              "english_translation": "I ate four apples."
+            },
+            {
+              "hiragana": "よっつ",
+              "romaji": "yottsu",
+              "example_sentence": "よっつ りんごがあります。",
+              "full_hiragana": "よっつ りんごがあります。",
+              "english_translation": "There are four apples."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_number": 2,
+      "chapter_title": "Calendar",
+      "kanji_list": [
+        {
+          "kanji": "月",
+          "meaning": "Month",
+          "readings": [
+            {
+              "hiragana": "げつ",
+              "romaji": "getsu",
+              "example_sentence": "月曜日は学校に行きます。",
+              "full_hiragana": "げつようびはがっこうにいきます。",
+              "english_translation": "I go to school on Monday."
+            },
+            {
+              "hiragana": "つき",
+              "romaji": "tsuki",
+              "example_sentence": "空には美しい月が見えます。",
+              "full_hiragana": "そらにはうつくしいつきがみえます。",
+              "english_translation": "A beautiful moon can be seen in the sky."
+            }
+          ]
+        },
+        {
+          "kanji": "火",
+          "meaning": "Fire",
+          "readings": [
+            {
+              "hiragana": "か",
+              "romaji": "ka",
+              "example_sentence": "火曜日はジムに行きます。",
+              "full_hiragana": "かようびはじむにいきます。",
+              "english_translation": "I go to the gym on Tuesday."
+            }
+          ]
+        },
+        {
+          "kanji": "水",
+          "meaning": "Water",
+          "readings": [
+            {
+              "hiragana": "みず",
+              "romaji": "mizu",
+              "example_sentence": "私は毎日水を飲みます。",
+              "full_hiragana": "わたしはまいにちみずをのみます。",
+              "english_translation": "I drink water every day."
+            },
+            {
+              "hiragana": "すい",
+              "romaji": "sui",
+              "example_sentence": "水曜日は映画を見ます。",
+              "full_hiragana": "すいようびはえいがをみます。",
+              "english_translation": "I watch a movie on Wednesday."
+            }
+          ]
+        },
+        {
+          "kanji": "木",
+          "meaning": "Tree",
+          "readings": [
+            {
+              "hiragana": "き",
+              "romaji": "ki",
+              "example_sentence": "庭には大きな木があります。",
+              "full_hiragana": "にわにはおおきなきがあります。",
+              "english_translation": "There is a big tree in the garden."
+            },
+            {
+              "hiragana": "もく",
+              "romaji": "moku",
+              "example_sentence": "木曜日に本を読みます。",
+              "full_hiragana": "もくようびにほんをよみます。",
+              "english_translation": "I read a book on Thursday."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
