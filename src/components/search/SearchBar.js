@@ -5,13 +5,16 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { searchKanji } from "@/lib/api/jisho";
 import { useKanji } from "@/context/KanjiContext";
+import DeckManagementModal from "./DeckManagementModal";
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { addToFavorites, favorites } = useKanji();
+  const [selectedKanji, setSelectedKanji] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { favorites } = useKanji();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -47,20 +50,15 @@ export function SearchBar() {
     }
   };
 
-  const handleAddToFavorites = (result) => {
-    if (addToFavorites) {
-      addToFavorites({
-        character: result.kanji,
-        reading: result.reading,
-        meaning: result.meanings.join(", "),
-      });
+  const handleKanjiSelect = (kanji) => {
+    console.log("hello")
+    setSelectedKanji(kanji);
+    setIsModalOpen(true);
+  };
 
-      setResults((prev) =>
-        prev.map((r) =>
-          r.kanji === result.kanji ? { ...r, isFavorited: true } : r
-        )
-      );
-    }
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedKanji(null);
   };
 
   return (
@@ -135,15 +133,10 @@ export function SearchBar() {
                   )}
                 </div>
                 <button
-                  onClick={() => handleAddToFavorites(result)}
-                  disabled={result.isFavorited}
-                  className={`text-2xl ${
-                    result.isFavorited
-                      ? "text-yellow-500 cursor-not-allowed"
-                      : "text-gray-400 hover:text-yellow-500"
-                  }`}
+                  onClick={() => handleKanjiSelect(result)}
+                  className="text-2xl text-gray-400 hover:text-yellow-500"
                 >
-                  {result.isFavorited ? "★" : "☆"}
+                  ☆
                 </button>
               </div>
             </CardContent>
@@ -156,6 +149,12 @@ export function SearchBar() {
           No results found. Try a different search term.
         </div>
       )}
+
+      <DeckManagementModal
+        kanji={selectedKanji}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+      />
     </div>
   );
 }

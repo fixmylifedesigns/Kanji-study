@@ -1,76 +1,108 @@
+// src/context/KanjiContext.js
 "use client";
 
-import { createContext, useContext, useReducer } from "react";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 const KanjiContext = createContext({});
 
-const initialState = {
-  favorites: [],
-  decks: [],
-  studyProgress: {},
-};
-
 export function KanjiProvider({ children }) {
-  const [favorites, setFavorites] = useLocalStorage("kanji_favorites", []);
-  const [decks, setDecks] = useLocalStorage("kanji_decks", []);
-  const [studyProgress, setStudyProgress] = useLocalStorage(
-    "study_progress",
-    {}
-  );
+  const [favorites, setFavorites] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  const addToFavorites = (kanji) => {
-    setFavorites((prev) => [...prev, kanji]);
+  // Fetch favorites when user changes
+  useEffect(() => {
+    if (user) {
+      fetchFavorites();
+    } else {
+      setFavorites([]);
+    }
+    setIsLoading(false);
+  }, [user]);
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await fetch(`/api/favorites?userId=${user.uid}`);
+      const data = await response.json();
+      if (response.ok) {
+        setFavorites(data.favorites);
+      } else {
+        console.error("Error fetching favorites:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+    }
   };
 
-  const removeFromFavorites = (kanji) => {
-    setFavorites((prev) => prev.filter((k) => k.character !== kanji.character));
+  const addToFavorites = async (kanji) => {
+    if (!user) return;
+
+    try {
+      const response = await fetch("/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.uid,
+          kanji,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.isFavorited) {
+          setFavorites((prev) => [
+            ...prev,
+            { ...kanji, dateAdded: Date.now() },
+          ]);
+        } else {
+          // If it was unfavorited (toggled off)
+          setFavorites((prev) => prev.filter((f) => f.slug !== kanji.slug));
+        }
+        return data.isFavorited;
+      } else {
+        console.error("Error managing favorite:", data.error);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error managing favorite:", error);
+      return false;
+    }
   };
 
-  const createDeck = (name) => {
-    setDecks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name,
-        created: new Date().toISOString(),
-        lastStudied: null,
-        kanjiList: [],
-      },
-    ]);
-  };
+  const removeFromFavorites = async (kanji) => {
+    if (!user) return;
 
-  const addToDeck = (deckId, kanji) => {
-    setDecks((prev) =>
-      prev.map((deck) =>
-        deck.id === deckId
-          ? { ...deck, kanjiList: [...deck.kanjiList, kanji] }
-          : deck
-      )
-    );
-  };
+    try {
+      const response = await fetch(
+        `/api/favorites?userId=${user.uid}&slug=${kanji.slug}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-  const updateStudyProgress = (kanjiId, correct) => {
-    setStudyProgress((prev) => ({
-      ...prev,
-      [kanjiId]: {
-        ...(prev[kanjiId] || {}),
-        attempts: (prev[kanjiId]?.attempts || 0) + 1,
-        correct: (prev[kanjiId]?.correct || 0) + (correct ? 1 : 0),
-        lastStudied: new Date().toISOString(),
-      },
-    }));
+      if (response.ok) {
+        setFavorites((prev) => prev.filter((f) => f.slug !== kanji.slug));
+        return true;
+      } else {
+        const data = await response.json();
+        console.error("Error removing favorite:", data.error);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+      return false;
+    }
   };
 
   const value = {
     favorites,
-    decks,
-    studyProgress,
+    isLoading,
     addToFavorites,
     removeFromFavorites,
-    createDeck,
-    addToDeck,
-    updateStudyProgress,
   };
 
   return (

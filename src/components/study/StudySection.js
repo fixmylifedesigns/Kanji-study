@@ -1,10 +1,11 @@
-// src/components/study/StudySection.jsx
+// src/components/study/StudySection.js
 "use client";
 
 import { useState } from "react";
 import { StudyMode } from "./StudyMode";
 import { SearchBar } from "../search/SearchBar";
 import { DeckList } from "../decks/DeckList";
+import { FavoritesList } from "../favorites/FavoritesList";
 
 export function StudySection() {
   const [activeTab, setActiveTab] = useState("study");
@@ -20,7 +21,6 @@ export function StudySection() {
 
   return (
     <div className="max-w-2xl mx-auto px-4">
-      {/* Main Navigation */}
       <nav className="flex justify-center gap-4 mb-8">
         <button
           onClick={() => setActiveTab("study")}
@@ -35,6 +35,12 @@ export function StudySection() {
           Search
         </button>
         <button
+          onClick={() => setActiveTab("favorites")}
+          className={buttonClass(activeTab === "favorites")}
+        >
+          Favorites
+        </button>
+        <button
           onClick={() => setActiveTab("decks")}
           className={buttonClass(activeTab === "decks")}
         >
@@ -42,9 +48,9 @@ export function StudySection() {
         </button>
       </nav>
 
-      {/* Study Mode Selection */}
       {activeTab === "study" && <StudyMode />}
       {activeTab === "search" && <SearchBar />}
+      {activeTab === "favorites" && <FavoritesList />}
       {activeTab === "decks" && <DeckList />}
     </div>
   );

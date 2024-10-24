@@ -1,24 +1,75 @@
+// src/components/study/KanjiGame.js
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useKanji } from "@/context/KanjiContext";
-import kanjiData from '@/data/kanjiData.json'; // Assuming your kanji data is stored here
+import { useAuth } from "@/context/AuthContext";
+import kanjiData from "@/data/kanjiData.json"; // For default deck
 
-export function KanjiGame() {
+export function KanjiGame({ showRomaji = true, deck }) {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [score, setScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [isCorrect, setIsCorrect] = useState(null);
-  const { updateStudyProgress } = useKanji() || {};
+  const [kanjiList, setKanjiList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { updateStudyProgress } = useKanji();
+  const { user } = useAuth();
 
-  // Filter the kanji list to only include Chapter 1 (Numbers)
-  const kanjiList = kanjiData.chapters.find(chapter => chapter.chapter_number === 1)?.kanji_list || [];
+  // Fetch deck content when component mounts
+  useEffect(() => {
+    fetchDeckContent();
+  }, [deck]);
 
-  // Use useRef for random selection to avoid hydration mismatch
-  const getRandomQuestion = useRef(() => {
-    if (!kanjiList.length) return null;
+  const fetchDeckContent = async () => {
+    setLoading(true);
+    try {
+      let kanjiArray = [];
 
-    const randomIndex = Math.floor(Math.random() * kanjiList.length);
-    const randomKanji = kanjiList[randomIndex];
+      if (deck.type === "default") {
+        // Use the default kanji data
+        kanjiArray = kanjiData.chapters.flatMap(
+          (chapter) => chapter.kanji_list
+        );
+      } else if (deck.type === "favorites") {
+        // Use the passed favorites
+        kanjiArray = deck.items.map((fav) => ({
+          kanji: fav.character,
+          reading: fav.reading,
+          meanings: Array.isArray(fav.meanings) ? fav.meanings : [fav.meanings],
+          readings: [{ hiragana: fav.reading }],
+        }));
+      } else {
+        // Fetch deck's kanji from API
+        const response = await fetch(
+          `/api/decks/${deck.id}/kanji?userId=${user.uid}`
+        );
+        const data = await response.json();
+        if (response.ok) {
+          kanjiArray = data.kanji.map((k) => ({
+            kanji: k.character,
+            reading: k.reading,
+            meanings: Array.isArray(k.meanings) ? k.meanings : [k.meanings],
+            readings: [{ hiragana: k.reading }],
+          }));
+        }
+      }
+
+      setKanjiList(kanjiArray);
+      if (kanjiArray.length > 0) {
+        setCurrentQuestion(getRandomQuestion(kanjiArray));
+      }
+    } catch (error) {
+      console.error("Error fetching deck content:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getRandomQuestion = (list) => {
+    if (!list?.length) return null;
+
+    const randomIndex = Math.floor(Math.random() * list.length);
+    const randomKanji = list[randomIndex];
 
     if (!randomKanji?.readings?.length) return null;
 
@@ -30,12 +81,11 @@ export function KanjiGame() {
     return {
       kanji: randomKanji.kanji,
       hiragana: randomReading.hiragana,
-      example_sentence: randomReading.example_sentence,
-      full_hiragana: randomReading.full_hiragana,
-      english_translation: randomReading.english_translation,
-      meaning: randomKanji.meaning,
+      meaning: Array.isArray(randomKanji.meanings)
+        ? randomKanji.meanings[0]
+        : randomKanji.meaning,
     };
-  }).current;
+  };
 
   const handleAnswer = (selectedKanji) => {
     if (!currentQuestion) return;
@@ -51,38 +101,47 @@ export function KanjiGame() {
       }
 
       // Update question after showing feedback
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         setIsCorrect(null);
-        setCurrentQuestion(getRandomQuestion());
+        setCurrentQuestion(getRandomQuestion(kanjiList));
       }, 1000);
-
-      return () => clearTimeout(timeoutId);
     } else {
       if (updateStudyProgress) {
         updateStudyProgress(selectedKanji, false);
       }
 
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         setIsCorrect(null);
       }, 1000);
-
-      return () => clearTimeout(timeoutId);
     }
   };
 
-  // Initialize question on client-side only
-  useEffect(() => {
-    if (kanjiList.length > 0 && !currentQuestion) {
-      setCurrentQuestion(getRandomQuestion());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kanjiList]);
-
-  if (!currentQuestion || !kanjiList.length) {
+  if (loading) {
     return (
       <Card className="w-full max-w-lg mx-auto">
         <CardContent className="p-6 text-center text-gray-600">
           Loading game...
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (kanjiList.length < 4) {
+    return (
+      <Card className="w-full max-w-lg mx-auto">
+        <CardContent className="p-6 text-center text-gray-600">
+          Need at least 4 kanji to play the game. Add more kanji to your{" "}
+          {deck.type === "favorites" ? "favorites" : "deck"}.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!currentQuestion) {
+    return (
+      <Card className="w-full max-w-lg mx-auto">
+        <CardContent className="p-6 text-center text-gray-600">
+          No valid questions available.
         </CardContent>
       </Card>
     );
@@ -107,10 +166,6 @@ export function KanjiGame() {
           <div className="text-lg text-gray-600 mb-4">
             ({currentQuestion.meaning})
           </div>
-          <div className="text-sm mb-2">{currentQuestion.full_hiragana}</div>
-          <div className="text-sm text-gray-600">
-            {currentQuestion.english_translation}
-          </div>
         </div>
 
         {isCorrect !== null && (
@@ -124,26 +179,52 @@ export function KanjiGame() {
         )}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {kanjiList.map((item, index) => (
-            <button
-              key={`kanji-choice-${index}`}
-              onClick={() => handleAnswer(item.kanji)}
-              className={`p-4 text-3xl bg-white border-2 rounded-lg 
+          {/* Show 4 random kanji including the correct one */}
+          {getGameChoices(kanjiList, currentQuestion.kanji).map(
+            (kanji, index) => (
+              <button
+                key={`${kanji}-${index}`}
+                onClick={() => handleAnswer(kanji)}
+                className={`p-4 text-3xl bg-white border-2 rounded-lg 
                         transition-all duration-200 ${
-                          isCorrect !== null &&
-                          item.kanji === currentQuestion.kanji
+                          isCorrect !== null && kanji === currentQuestion.kanji
                             ? "border-green-500 bg-green-50"
                             : isCorrect === false &&
-                              item.kanji === currentQuestion.kanji
+                              kanji === currentQuestion.kanji
                             ? "border-red-500 bg-red-50"
                             : "border-gray-200 hover:bg-blue-50 hover:border-blue-300"
                         }`}
-            >
-              {item.kanji}
-            </button>
-          ))}
+              >
+                {kanji}
+              </button>
+            )
+          )}
         </div>
       </CardContent>
     </Card>
   );
+}
+
+// Helper function to get 4 random choices including the correct answer
+function getGameChoices(kanjiList, correctKanji) {
+  const choices = new Set([correctKanji]);
+
+  // Add random unique choices until we have 4
+  while (choices.size < 4) {
+    const randomKanji =
+      kanjiList[Math.floor(Math.random() * kanjiList.length)].kanji;
+    choices.add(randomKanji);
+  }
+
+  // Convert to array and shuffle
+  return shuffleArray([...choices]);
+}
+
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
