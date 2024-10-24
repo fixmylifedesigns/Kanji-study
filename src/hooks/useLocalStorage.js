@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export function useLocalStorage(key, initialValue) {
+export function useLocalStorage(key, initialValue = "") {
   // Initialize state lazily to avoid issues during SSR
   const [storedValue, setStoredValue] = useState(() => {
     try {

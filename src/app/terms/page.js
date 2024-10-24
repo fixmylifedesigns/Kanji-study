@@ -31,11 +31,12 @@ export default function Terms() {
             <section className="space-y-6">
               <h2 className="text-xl font-semibold">1. Introduction</h2>
               <p>
-                Welcome to Kanji Study. These Terms and Conditions ("Terms")
-                govern your use of the Kanji Study application ("App"), developed
-                and operated by StealthWork LLC ("Company," "we," "us," or
-                "our"). By accessing or using the App, you agree to be bound by
-                these Terms.
+                Welcome to Kanji Study. These Terms and Conditions
+                (&quot;Terms&quot;) govern your use of the Kanji Study
+                application (&quot;App&quot;), developed and operated by
+                StealthWork LLC (&quot;Company,&quot; &quot;we,&quot;
+                &quot;us,&quot; or &quot;our&quot;). By accessing or using the
+                App, you agree to be bound by these Terms.
               </p>
 
               <h2 className="text-xl font-semibold">2. Use of the App</h2>
