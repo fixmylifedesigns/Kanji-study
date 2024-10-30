@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { kanjiData } from "@/data/kanjiData";
 const STORAGE_KEYS = {
@@ -15,6 +16,7 @@ const Preferences = {
 };
 
 export default function GamePage() {
+  const router = useRouter();
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);

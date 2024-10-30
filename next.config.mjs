@@ -2,7 +2,7 @@
 const nextConfig = {
   // Enable edge runtime for API routes
   experimental: {
-    serverActions: true,
+    serverActions: {},
   },
   images: {
     unoptimized: true,
@@ -14,8 +14,9 @@ const nextConfig = {
       },
     ],
   },
-  output: "export",
-  distDir: 'out',
+  // Add in for mobile 
+  // output: "export",
+  // distDir: 'out',
 };
 
 export default nextConfig;

@@ -2,22 +2,35 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronDown, Shuffle } from "lucide-react";
 
-const HomeSelector = ({ japaneseData, onSelectLevel, onSelectChapter }) => {
+const HomeSelector = ({ kanjiData, onSelectLevel, onSelectChapter }) => {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedChapter, setSelectedChapter] = useState("");
   const [chapters, setChapters] = useState([]);
 
   useEffect(() => {
+    // Default to single level if only one exists
+    if (kanjiData.levels.length === 1) {
+      handleLevelChange(kanjiData.levels[0].id);
+    }
+  }, []);
+
+  useEffect(() => {
     if (selectedLevel) {
-      const level = japaneseData.levels.find((l) => l.id === selectedLevel);
+      const level = kanjiData.levels.find((l) => l.id === selectedLevel);
       setChapters(level?.chapters || []);
       setSelectedChapter("");
+
+      // Default to single chapter if only one exists
+      if (level?.chapters.length === 1) {
+        handleChapterChange(level.chapters[0].chapter_number.toString());
+      }
     }
-  }, [selectedLevel, japaneseData.levels]);
+  }, [selectedLevel, kanjiData.levels]);
 
   const handleLevelChange = (levelId) => {
     setSelectedLevel(levelId);
-    onSelectLevel(japaneseData.levels.find((l) => l.id === levelId));
+    const level = kanjiData.levels.find((l) => l.id === levelId);
+    onSelectLevel(level);
   };
 
   const handleChapterChange = (chapterNumber) => {
@@ -31,14 +44,24 @@ const HomeSelector = ({ japaneseData, onSelectLevel, onSelectChapter }) => {
   };
 
   const handleRandomChapter = () => {
-    const randomLevel =
-      japaneseData.levels[
-        Math.floor(Math.random() * japaneseData.levels.length)
-      ];
-    const randomChapter =
-      randomLevel.chapters[
-        Math.floor(Math.random() * randomLevel.chapters.length)
-      ];
+    // Get available levels
+    const availableLevels = kanjiData.levels.filter(
+      (level) => level.chapters.length > 0
+    );
+    if (availableLevels.length === 0) return;
+
+    // Select random level
+    const randomLevelIndex = Math.floor(Math.random() * availableLevels.length);
+    const randomLevel = availableLevels[randomLevelIndex];
+
+    // Select random chapter from chosen level
+    const availableChapters = randomLevel.chapters;
+    const randomChapterIndex = Math.floor(
+      Math.random() * availableChapters.length
+    );
+    const randomChapter = availableChapters[randomChapterIndex];
+
+    // Update states and notify parent
     setSelectedLevel(randomLevel.id);
     setSelectedChapter(randomChapter.chapter_number.toString());
     onSelectLevel(randomLevel);
@@ -69,7 +92,7 @@ const HomeSelector = ({ japaneseData, onSelectLevel, onSelectChapter }) => {
             className="w-full p-4 bg-white rounded-lg shadow appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select JLPT Level</option>
-            {japaneseData.levels.map((level) => (
+            {kanjiData.levels.map((level) => (
               <option key={level.id} value={level.id}>
                 {level.name}
               </option>
