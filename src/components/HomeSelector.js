@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronDown, Shuffle } from "lucide-react";
+import { StudyMode } from "./study/StudyMode";
 
 const HomeSelector = ({ kanjiData, onSelectLevel, onSelectChapter }) => {
   const [selectedLevel, setSelectedLevel] = useState("");
@@ -82,8 +83,16 @@ const HomeSelector = ({ kanjiData, onSelectLevel, onSelectChapter }) => {
         />
       </div>
       <div className="max-w-md mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-center mb-8">Study Japanese</h1>
-
+        <h1 className="text-2xl font-bold text-center">
+          Welcome to Kanji Study
+        </h1>
+        {/* <p className="text-gray-600 text-center">
+          Get started by creating a deck or adding favorites to study.
+          Meanwhile, you can practice with our default kanji set!
+        </p> */}
+        <p className="text-gray-600 text-center">
+          Get started by selecting a Chapter to study.
+        </p>
         {/* Level Selector */}
         <div className="relative">
           <select
@@ -100,7 +109,6 @@ const HomeSelector = ({ kanjiData, onSelectLevel, onSelectChapter }) => {
           </select>
           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
         </div>
-
         {/* Chapter Selector */}
         {selectedLevel && (
           <div className="relative">
@@ -122,7 +130,6 @@ const HomeSelector = ({ kanjiData, onSelectLevel, onSelectChapter }) => {
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
           </div>
         )}
-
         {/* Random Button */}
         <button
           onClick={handleRandomChapter}
@@ -130,7 +137,8 @@ const HomeSelector = ({ kanjiData, onSelectLevel, onSelectChapter }) => {
         >
           <Shuffle size={20} />
           <span>Random Chapter</span>
-        </button>
+        </button>{" "}
+        <StudyMode />
       </div>
     </div>
   );

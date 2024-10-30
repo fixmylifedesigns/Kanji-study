@@ -4,6 +4,7 @@
 import React from "react";
 import HomeSelector from "../HomeSelector";
 import { kanjiData } from "@/data/kanjiData";
+import {StudyMode} from "../study/StudyMode";
 
 const KanjiLearningApp = () => {
   const handleLevelSelect = (level) => {
@@ -21,6 +22,7 @@ const KanjiLearningApp = () => {
         onSelectLevel={handleLevelSelect}
         onSelectChapter={(chapter) => handleChapterSelect(chapter)}
       />
+      <></>
     </div>
   );
 };
