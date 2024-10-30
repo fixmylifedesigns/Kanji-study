@@ -1,7 +1,7 @@
-# Kanji Study <img src="public/kanji-study-logo.png" width="60" align="center" alt="Kanji Study Logo">
+# Kanji Study <img src="public/images/kanji-study-logo.png" width="60" align="center" alt="Kanji Study Logo">
 
 <div align="center">
-  <img src="public/kanji-study-logo.png" width="200" alt="Kanji Study Logo">
+  <img src="public/images/kanji-study-logo.png" width="200" alt="Kanji Study Logo">
 
   <p align="center">
     An interactive Japanese kanji learning platform built with Next.js

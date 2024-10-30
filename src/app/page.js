@@ -1,24 +1,20 @@
 // src/app/page.js
 "use client";
+import React from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Settings } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { StudySection } from "@/components/study/StudySection";
+import KanjiLearningApp from "@/components/v1/KanjiLearningApp";
+import BottomNav from "@/components/BottomNav";
 
 export default function Home() {
   const { user, googleLogin } = useAuth();
 
   if (user) {
     return (
-      <main className="min-h-screen bg-gray-50 py-8 relative">
-        <Link
-          href="/settings"
-          className="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-900"
-        >
-          <Settings size={24} />
-        </Link>
-        <StudySection />
+      <main className="min-h-screen bg-gray-100 relative">
+        <KanjiLearningApp />
+        <BottomNav currentPage={"home"} />
       </main>
     );
   }
@@ -29,7 +25,7 @@ export default function Home() {
         {/* Logo Container */}
         <div className="w-64 h-64 mx-auto mb-8 relative animate-fade-in">
           <Image
-            src="/kanji-study-logo.png" // Make sure to add the image to public folder
+            src="/images/kanji-study-logo.png" // Make sure to add the image to public folder
             alt="Kanji Study Logo"
             width={256}
             height={256}

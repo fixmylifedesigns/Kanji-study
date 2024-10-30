@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import BottomNav from "@/components/BottomNav";
 
 export default function Settings() {
   const { user, logout } = useAuth();
@@ -20,18 +21,11 @@ export default function Settings() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4">
+    <main className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="mb-6 flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="mr-2" size={20} />
-          Back
-        </button>
         <div className="w-64 h-64 mx-auto mb-8 relative animate-fade-in">
           <Image
-            src="/kanji-study-logo.png" // Make sure to add the image to public folder
+            src="/images/kanji-study-logo.png" // Make sure to add the image to public folder
             alt="Kanji Study Logo"
             width={256}
             height={256}
@@ -61,6 +55,7 @@ export default function Settings() {
           </CardContent>
         </Card>
       </div>
+      <BottomNav currentPage={"settings"} />
     </main>
   );
 }

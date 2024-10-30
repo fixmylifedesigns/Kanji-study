@@ -1,3 +1,5 @@
+// src/components/search/DeckManagementModal.js
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useKanji } from "@/context/KanjiContext"; // Add this import

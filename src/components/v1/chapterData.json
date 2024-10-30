@@ -1,0 +1,160 @@
+{
+  "chapters": [
+    {
+      "chapter_number": 10,
+      "chapter_title": "Tabemono",
+      "kanji_list": [
+        {
+          "kanji": "魚",
+          "meaning": "Fish",
+          "readings": [
+            {
+              "hiragana": "うお",
+              "romaji": "uo",
+              "example_sentence": "魚いちばは あさはやく はじまります。",
+              "english_translation": "The fish market starts early in the morning."
+            },
+            {
+              "hiragana": "さかな",
+              "romaji": "sakana",
+              "example_sentence": "魚やで しんせんな魚をかいます。",
+              "english_translation": "I buy fresh fish at the fish shop."
+            },
+            {
+              "hiragana": "ぎょ",
+              "romaji": "gyo",
+              "example_sentence": "やき魚が だいすきです。",
+              "english_translation": "I love grilled fish."
+            },
+            {
+              "hiragana": "-ざかな",
+              "romaji": "-zakana",
+              "example_sentence": "いざかやで あか貝のさしみとやき魚をたべました。",
+              "english_translation": "I ate grilled fish and red shellfish sashimi at an izakaya."
+            }
+          ]
+        },
+        {
+          "kanji": "貝",
+          "meaning": "Shellfish",
+          "readings": [
+            {
+              "hiragana": "かい",
+              "romaji": "kai",
+              "example_sentence": "うみで 貝を とりました。",
+              "english_translation": "I collected shellfish at the sea."
+            },
+            {
+              "hiragana": "がい",
+              "romaji": "gai",
+              "example_sentence": "あか貝の さしみが おいしいです。",
+              "english_translation": "The red shellfish sashimi is delicious."
+            }
+          ]
+        },
+        {
+          "kanji": "好",
+          "meaning": "Like",
+          "readings": [
+            {
+              "hiragana": "すき",
+              "romaji": "suki",
+              "example_sentence": "私はサッカーが好きです。",
+              "english_translation": "I like soccer."
+            },
+            {
+              "hiragana": "こう",
+              "romaji": "kou",
+              "example_sentence": "彼は好人物です。",
+              "english_translation": "He is a nice person."
+            }
+          ]
+        },
+        {
+          "kanji": "物",
+          "meaning": "Thing",
+          "readings": [
+            {
+              "hiragana": "もの",
+              "romaji": "mono",
+              "example_sentence": "これは高価な物です。",
+              "english_translation": "This is an expensive thing."
+            },
+            {
+              "hiragana": "ぶつ",
+              "romaji": "butsu",
+              "example_sentence": "生き物は自然の一部です。",
+              "english_translation": "Living creatures are part of nature."
+            },
+            {
+              "hiragana": "もつ",
+              "romaji": "motsu",
+              "example_sentence": "彼は何かを持っています。",
+              "english_translation": "He is holding something."
+            }
+          ]
+        },
+        {
+          "kanji": "牛",
+          "meaning": "Cow",
+          "readings": [
+            {
+              "hiragana": "うし",
+              "romaji": "ushi",
+              "example_sentence": "ぼくじょうに牛がたくさんいます。",
+              "english_translation": "There are many cows on the farm."
+            },
+            {
+              "hiragana": "ぎゅう",
+              "romaji": "gyuu",
+              "example_sentence": "牛肉はステーキに使われます。",
+              "english_translation": "Beef is used for steak."
+            }
+          ]
+        },
+        {
+          "kanji": "肉",
+          "meaning": "Meat",
+          "readings": [
+            {
+              "hiragana": "にく",
+              "romaji": "niku",
+              "example_sentence": "肉が大好きです。",
+              "english_translation": "I love meat."
+            }
+          ]
+        },
+        {
+          "kanji": "米",
+          "meaning": "Rice",
+          "readings": [
+            {
+              "hiragana": "こめ",
+              "romaji": "kome",
+              "example_sentence": "日本の米はおいしいです。",
+              "english_translation": "Japanese rice is delicious."
+            },
+            {
+              "hiragana": "まい",
+              "romaji": "mai",
+              "example_sentence": "米は食料品の一部です。",
+              "english_translation": "Rice is part of the groceries."
+            }
+          ]
+        },
+        {
+          "kanji": "茶",
+          "meaning": "Tea",
+          "readings": [
+            {
+              "hiragana": "ちゃ",
+              "romaji": "cha",
+              "example_sentence": "日本のお茶はとてもおいしいです。",
+              "english_translation": "Japanese tea is very delicious."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
