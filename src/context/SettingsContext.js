@@ -1,65 +1,54 @@
 // src/context/SettingsContext.js
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+
+export const STORAGE_KEYS = {
+  LANGUAGE: "preferred_language",
+  SHOW_ROMAJI: "show_romaji",
+  LEVEL: "selectedLevel",
+  CHAPTER: "selectedChapter",
+};
+
+export const LANGUAGES = [
+  { code: "en", name: "English", flag: "🇬🇧" },
+  { code: "es", name: "Español", flag: "🇪🇸" },
+  { code: "ja", name: "日本語", flag: "🇯🇵" },
+  { code: "ko", name: "한국어", flag: "🇰🇷" },
+  { code: "zh", name: "中文", flag: "🇨🇳" },
+];
 
 const SettingsContext = createContext({});
 
 export function SettingsProvider({ children }) {
-  const [showRomaji, setShowRomaji] = useState(true);
-  const [language, setLanguage] = useState("en");
-  const [isLoading, setIsLoading] = useState(true);
+  const [showRomaji, setShowRomaji] = useLocalStorage(
+    STORAGE_KEYS.SHOW_ROMAJI,
+    true
+  );
+  const [language, setLanguage] = useLocalStorage(STORAGE_KEYS.LANGUAGE, "en");
+  const [selectedLevel, setSelectedLevel] = useLocalStorage(
+    STORAGE_KEYS.LEVEL,
+    null
+  );
+  const [selectedChapter, setSelectedChapter] = useLocalStorage(
+    STORAGE_KEYS.CHAPTER,
+    null
+  );
 
-  useEffect(() => {
-    const loadSettings = () => {
-      try {
-        const savedRomaji = localStorage.getItem("show_romaji");
-        const savedLanguage = localStorage.getItem("preferred_language");
-
-        if (savedRomaji !== null) {
-          setShowRomaji(savedRomaji === "true");
-        }
-        if (savedLanguage) {
-          setLanguage(savedLanguage);
-        }
-      } catch (error) {
-        console.error("Error loading settings:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadSettings();
-  }, []);
-
-  const updateShowRomaji = (value) => {
-    try {
-      setShowRomaji(value);
-      localStorage.setItem("show_romaji", String(value));
-    } catch (error) {
-      console.error("Error saving romaji setting:", error);
-    }
-  };
-
-  const updateLanguage = (value) => {
-    try {
-      setLanguage(value);
-      localStorage.setItem("preferred_language", value);
-    } catch (error) {
-      console.error("Error saving language setting:", error);
-    }
+  const value = {
+    showRomaji,
+    setShowRomaji,
+    language,
+    setLanguage,
+    selectedLevel,
+    setSelectedLevel,
+    selectedChapter,
+    setSelectedChapter,
   };
 
   return (
-    <SettingsContext.Provider
-      value={{
-        showRomaji,
-        language,
-        updateShowRomaji,
-        updateLanguage,
-        isLoading,
-      }}
-    >
+    <SettingsContext.Provider value={value}>
       {children}
     </SettingsContext.Provider>
   );

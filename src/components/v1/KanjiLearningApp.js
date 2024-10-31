@@ -4,15 +4,17 @@
 import React from "react";
 import HomeSelector from "../HomeSelector";
 import { kanjiData } from "@/data/kanjiData";
-import {StudyMode} from "../study/StudyMode";
+import { useSettings } from "@/context/SettingsContext";
 
 const KanjiLearningApp = () => {
+  const { setSelectedLevel, setSelectedChapter } = useSettings();
+
   const handleLevelSelect = (level) => {
-    localStorage.setItem("selectedLevel", level.id);
+    setSelectedLevel(level.id);
   };
 
-  const handleChapterSelect = (chapter, level) => {
-    localStorage.setItem("selectedChapter", chapter.chapter_number.toString());
+  const handleChapterSelect = (chapter) => {
+    setSelectedChapter(chapter.chapter_number.toString());
   };
 
   return (
@@ -20,9 +22,9 @@ const KanjiLearningApp = () => {
       <HomeSelector
         kanjiData={kanjiData}
         onSelectLevel={handleLevelSelect}
-        onSelectChapter={(chapter) => handleChapterSelect(chapter)}
+        onSelectChapter={handleChapterSelect}
       />
-      <></>
+      <div className="min-h-20"></div>
     </div>
   );
 };

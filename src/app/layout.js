@@ -14,6 +14,7 @@ export default function RootLayout({ children }) {
       <body>
         <AuthProvider>
           <SettingsProvider>{children}</SettingsProvider>
+          {/* <div className="min-h-20"></div> */}
         </AuthProvider>
       </body>
     </html>

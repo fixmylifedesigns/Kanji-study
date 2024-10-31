@@ -1,29 +1,73 @@
 // src/app/game/page.js
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { kanjiData } from "@/data/kanjiData";
-const STORAGE_KEYS = {
-  LEVEL: "selectedLevel",
-  CHAPTER: "selectedChapter",
-};
+import { useSettings } from "@/context/SettingsContext";
 
-const Preferences = {
-  get: async ({ key }) => ({ value: localStorage.getItem(key) }),
-  set: async ({ key, value }) => localStorage.setItem(key, value),
-};
+/**
+ * Generates 4 unique kanji choices, including the correct answer
+ * @param {Array} kanjiList - Full list of available kanji
+ * @param {string} correctKanji - The correct kanji that must be included
+ * @returns {Array} Array of exactly 4 unique kanji characters
+ */
+function generateChoices(kanjiList, correctKanji) {
+  // Create a set with the correct answer
+  const choices = new Set([correctKanji]);
+
+  // Keep adding random kanji until we have exactly 4 choices
+  while (choices.size < 4) {
+    const randomKanji =
+      kanjiList[Math.floor(Math.random() * kanjiList.length)].kanji;
+    choices.add(randomKanji);
+  }
+
+  // Convert to array and shuffle
+  return shuffleArray([...choices]);
+}
+
+/**
+ * Fisher-Yates shuffle algorithm for randomizing array elements
+ * @param {Array} array - Array to be shuffled
+ * @returns {Array} New shuffled array
+ */
+function shuffleArray(array) {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+}
 
 export default function GamePage() {
   const router = useRouter();
-  const [selectedLevel, setSelectedLevel] = useState(null);
-  const [selectedChapter, setSelectedChapter] = useState(null);
+  const { selectedLevel, selectedChapter } = useSettings();
+
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [choices, setChoices] = useState([]);
   const [score, setScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [wrongAnswer, setWrongAnswer] = useState(null);
   const [correctAnswer, setCorrectAnswer] = useState(null);
+
+  // Get current chapter data from selected level and chapter
+  const currentChapter = useMemo(() => {
+    if (!selectedLevel || !selectedChapter) return null;
+    const level = kanjiData.levels.find((l) => l.id === selectedLevel);
+    return level?.chapters.find(
+      (c) => c.chapter_number === parseInt(selectedChapter)
+    );
+  }, [selectedLevel, selectedChapter]);
+
+  // Initialize game when chapter is loaded
+  React.useEffect(() => {
+    if (currentChapter) {
+      startGame(currentChapter.kanji_list);
+    }
+  }, [currentChapter]);
 
   const shakeAnimation = `
     @keyframes shake {
@@ -33,35 +77,13 @@ export default function GamePage() {
     }
   `;
 
-  useEffect(() => {
-    const loadPreferences = async () => {
-      const savedLevel = await Preferences.get({ key: STORAGE_KEYS.LEVEL });
-      const savedChapter = await Preferences.get({ key: STORAGE_KEYS.CHAPTER });
-
-      if (savedLevel.value && savedChapter.value) {
-        const level = kanjiData.levels.find(
-          (l) => l.id === savedLevel.value
-        );
-        const chapter = level?.chapters.find(
-          (c) => c.chapter_number === parseInt(savedChapter.value)
-        );
-        setSelectedLevel(level);
-        setSelectedChapter(chapter);
-        if (chapter) {
-          startGame(chapter.kanji_list);
-        }
-      }
-    };
-
-    loadPreferences();
-  }, []);
-
   const getRandomQuestion = (kanjiList) => {
     const randomKanji = kanjiList[Math.floor(Math.random() * kanjiList.length)];
     const randomReading =
       randomKanji.readings[
         Math.floor(Math.random() * randomKanji.readings.length)
       ];
+
     return {
       kanji: randomKanji.kanji,
       hiragana: randomReading.hiragana,
@@ -72,7 +94,10 @@ export default function GamePage() {
 
   const startGame = (kanjiList) => {
     const newQuestion = getRandomQuestion(kanjiList);
+    const newChoices = generateChoices(kanjiList, newQuestion.kanji);
+
     setCurrentQuestion(newQuestion);
+    setChoices(newChoices);
     setScore(0);
     setTotalAttempts(0);
     setWrongAnswer(null);
@@ -81,12 +106,24 @@ export default function GamePage() {
 
   const handleAnswer = (selectedKanji) => {
     setTotalAttempts((prev) => prev + 1);
+
     if (selectedKanji === currentQuestion.kanji) {
       setScore((prev) => prev + 1);
       setCorrectAnswer(selectedKanji);
+
+      // Set up next question after delay
       setTimeout(() => {
-        setCorrectAnswer(null);
-        setCurrentQuestion(getRandomQuestion(selectedChapter.kanji_list));
+        if (currentChapter?.kanji_list) {
+          const newQuestion = getRandomQuestion(currentChapter.kanji_list);
+          const newChoices = generateChoices(
+            currentChapter.kanji_list,
+            newQuestion.kanji
+          );
+
+          setCurrentQuestion(newQuestion);
+          setChoices(newChoices);
+          setCorrectAnswer(null);
+        }
       }, 500);
     } else {
       setWrongAnswer(selectedKanji);
@@ -96,7 +133,8 @@ export default function GamePage() {
     }
   };
 
-  if (!selectedChapter || !currentQuestion) {
+  // Return for no chapter selected remains the same...
+  if (!currentChapter || !currentQuestion) {
     return (
       <main className="min-h-screen bg-gray-100">
         <div className="p-4">
@@ -120,70 +158,73 @@ export default function GamePage() {
   return (
     <main className="min-h-screen bg-gray-100">
       <style>{shakeAnimation}</style>
-      <div className="p-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 max-w-[600px] h-[80vh] mx-auto">
-          <div className="text-center mb-6">
-            <div className="text-xl font-bold mb-2">
+      <div className="flex flex-col h-screen">
+        {/* Score Section - Top */}
+        <div className="p-4 bg-white shadow-sm">
+          <div className="text-center">
+            <div className="text-2xl font-bold">
               Score: {score} / {totalAttempts}
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-base text-gray-600">
               {((score / (totalAttempts || 1)) * 100).toFixed(1)}% Correct
             </div>
           </div>
+        </div>
 
-          <div className="mb-6">
-            <div className="text-center">
-              <div className="text-2xl mb-2">Match this reading:</div>
-              <div className="text-4xl font-bold mb-4">
-                {currentQuestion.hiragana}
-              </div>
-              <div className="text-lg text-gray-600 mb-4">
-                ({currentQuestion.meaning})
-              </div>
-              <div className="text-sm mb-2">
-                {currentQuestion.example?.japanese}
-              </div>
-              <div className="text-sm text-gray-600">
-                {currentQuestion.example?.english}
-              </div>
+        {/* Question Section - Middle */}
+        <div className="flex-grow p-4 flex flex-col justify-center">
+          <div className="text-center space-y-6">
+            <div className="text-3xl">Match this reading:</div>
+            <div className="text-6xl font-bold mb-4">
+              {currentQuestion.hiragana}
+            </div>
+            <div className="text-2xl text-gray-600 mb-4">
+              ({currentQuestion.meaning})
+            </div>
+            <div className="text-lg">{currentQuestion.example?.hiragana}</div>
+            <div className="text-lg text-gray-600">
+              {currentQuestion.example?.english}
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {selectedChapter.kanji_list.map((item) => (
+        {/* Choices Section - Bottom */}
+        <div className="p-4 pb-28 bg-white shadow-lg">
+          <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
+            {choices.map((kanji) => (
               <button
-                key={item.kanji}
-                onClick={() => handleAnswer(item.kanji)}
+                key={kanji}
+                onClick={() => handleAnswer(kanji)}
                 className={`
-                  p-4 text-3xl border-2 rounded-lg transition-colors relative
+                  py-8 text-5xl border-2 rounded-xl transition-colors relative
+                  active:scale-95 transform
                   ${
-                    wrongAnswer === item.kanji
+                    wrongAnswer === kanji
                       ? "animate-[shake_0.8s_ease-in-out] bg-red-50 border-red-300"
-                      : correctAnswer === item.kanji
+                      : correctAnswer === kanji
                       ? "bg-green-50 border-green-300"
                       : "bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300"
                   }
                 `}
                 style={{
                   animation:
-                    wrongAnswer === item.kanji
-                      ? "shake 0.8s ease-in-out"
-                      : "none",
+                    wrongAnswer === kanji ? "shake 0.8s ease-in-out" : "none",
                 }}
               >
-                {item.kanji}
-                {wrongAnswer === item.kanji && (
-                  <div className="absolute inset-0 bg-red-500 opacity-20 rounded-lg" />
+                {kanji}
+                {wrongAnswer === kanji && (
+                  <div className="absolute inset-0 bg-red-500 opacity-20 rounded-xl" />
                 )}
-                {correctAnswer === item.kanji && (
-                  <div className="absolute inset-0 bg-green-500 opacity-20 rounded-lg" />
+                {correctAnswer === kanji && (
+                  <div className="absolute inset-0 bg-green-500 opacity-20 rounded-xl" />
                 )}
               </button>
             ))}
           </div>
         </div>
+
+        <BottomNav currentPage="game" />
       </div>
-      <BottomNav currentPage="game" />
     </main>
   );
 }

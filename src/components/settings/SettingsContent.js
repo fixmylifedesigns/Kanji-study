@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Capacitor } from "@capacitor/core";
+import { useSettings } from "@/context/SettingsContext";
 
 const LANGUAGES = [
   { code: "en", name: "English", flag: "🇬🇧" },
@@ -22,11 +23,11 @@ const STORAGE_KEYS = {
 };
 
 export function SettingsContent() {
+  const { showRomaji, setShowRomaji } = useSettings();
   const { user, logout } = useAuth();
   const router = useRouter();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(LANGUAGES[0]);
-  const [showRomaji, setShowRomaji] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isNative, setIsNative] = useState(false);
 
@@ -41,7 +42,9 @@ export function SettingsContent() {
       try {
         const savedLanguage = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
         if (savedLanguage) {
-          const language = LANGUAGES.find(lang => lang.code === savedLanguage);
+          const language = LANGUAGES.find(
+            (lang) => lang.code === savedLanguage
+          );
           if (language) setSelectedLanguage(language);
         }
 
@@ -75,6 +78,7 @@ export function SettingsContent() {
   };
 
   const handleRomajiToggle = () => {
+    setShowRomaji(!showRomaji);
     const newValue = !showRomaji;
     setShowRomaji(newValue);
     savePreferences(STORAGE_KEYS.SHOW_ROMAJI, String(newValue));
