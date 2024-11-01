@@ -10,12 +10,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <AuthProvider>
-          <SettingsProvider>{children}</SettingsProvider>
-          {/* <div className="min-h-20"></div> */}
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body suppressHydrationWarning>
+        <div className="min-h-screen relative">
+          <AuthProvider>
+            <SettingsProvider>{children}</SettingsProvider>
+          </AuthProvider>
+        </div>
       </body>
     </html>
   );

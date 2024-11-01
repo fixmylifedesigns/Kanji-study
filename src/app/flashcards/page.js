@@ -29,7 +29,14 @@ export default function FlashcardsPage() {
     return currentChapter.kanji_list[currentKanjiIndex];
   }, [currentChapter, currentKanjiIndex]);
 
-  // Handle navigation to next card
+  // Reset state when chapter changes
+  React.useEffect(() => {
+    setCurrentKanjiIndex(0);
+    setIsFlipped(false);
+    setSelectedReading(0);
+  }, [currentChapter]);
+
+  // Handle navigation functions
   const handleNext = () => {
     if (!currentChapter?.kanji_list) return;
     setCurrentKanjiIndex(prev => (prev + 1) % currentChapter.kanji_list.length);
@@ -37,7 +44,6 @@ export default function FlashcardsPage() {
     setSelectedReading(0);
   };
 
-  // Handle navigation to previous card
   const handlePrevious = () => {
     if (!currentChapter?.kanji_list) return;
     setCurrentKanjiIndex(prev => 
@@ -47,14 +53,48 @@ export default function FlashcardsPage() {
     setSelectedReading(0);
   };
 
-  // Reset state when chapter changes
-  React.useEffect(() => {
-    setCurrentKanjiIndex(0);
-    setIsFlipped(false);
-    setSelectedReading(0);
-  }, [currentChapter]);
+  // Memoize the readings section
+  const ReadingsSection = useMemo(() => {
+    if (!currentKanji) return null;
+    
+    return (
+      <div className="w-full space-y-4">
+        {currentKanji.readings.map((reading, idx) => (
+          <div
+            key={reading.romaji}
+            className={`p-3 rounded ${
+              selectedReading === idx ? "bg-blue-50" : "hover:bg-gray-50"
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedReading(idx);
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="text-lg font-bold">{reading.hiragana}</div>
+              {reading.reading_type === "onyomi" && reading.katakana && (
+                <div className="text-lg text-gray-600">({reading.katakana})</div>
+              )}
+              {showRomaji && (
+                <div className="text-sm text-gray-600">
+                  [{reading.romaji}] - {reading.reading_type}
+                </div>
+              )}
+            </div>
+            {reading.example && (
+              <div className="mt-2 text-sm">
+                <div>{reading.example.japanese}</div>
+                <div className="text-gray-600 mt-1">{reading.example.hiragana}</div>
+                <div className="text-gray-600 mt-1">{reading.example.english}</div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }, [currentKanji, selectedReading, showRomaji]);
 
-  // If no chapter is selected or no kanji data, show the selection prompt
+  // If no chapter or kanji data, show selection prompt
   if (!currentChapter || !currentKanji) {
     return (
       <main className="min-h-screen bg-gray-100">
@@ -75,56 +115,6 @@ export default function FlashcardsPage() {
       </main>
     );
   }
-
-  // Memoize the readings section to prevent unnecessary re-renders
-  const ReadingsSection = useMemo(() => (
-    <div className="w-full space-y-4">
-      {currentKanji.readings.map((reading, idx) => (
-        <div
-          key={reading.romaji}
-          className={`p-3 rounded ${
-            selectedReading === idx
-              ? "bg-blue-50"
-              : "hover:bg-gray-50"
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedReading(idx);
-          }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <div className="text-lg font-bold">
-              {reading.hiragana}
-            </div>
-            {reading.reading_type === "onyomi" && reading.katakana && (
-              <div className="text-lg text-gray-600">
-                ({reading.katakana})
-              </div>
-            )}
-            {showRomaji && (
-              <div className="text-sm text-gray-600">
-                [{reading.romaji}] - {reading.reading_type}
-              </div>
-            )}
-          </div>
-          
-          <div className="mt-2 text-sm">
-            {reading.example && (
-              <>
-                <div>{reading.example.japanese}</div>
-                <div className="text-gray-600 mt-1">
-                  {reading.example.hiragana}
-                </div>
-                <div className="text-gray-600 mt-1">
-                  {reading.example.english}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  ), [currentKanji, selectedReading, showRomaji]);
 
   return (
     <main className="min-h-screen bg-gray-100">

@@ -22,19 +22,10 @@ export const LANGUAGES = [
 const SettingsContext = createContext({});
 
 export function SettingsProvider({ children }) {
-  const [showRomaji, setShowRomaji] = useLocalStorage(
-    STORAGE_KEYS.SHOW_ROMAJI,
-    true
-  );
+  const [showRomaji, setShowRomaji] = useLocalStorage(STORAGE_KEYS.SHOW_ROMAJI, true);
   const [language, setLanguage] = useLocalStorage(STORAGE_KEYS.LANGUAGE, "en");
-  const [selectedLevel, setSelectedLevel] = useLocalStorage(
-    STORAGE_KEYS.LEVEL,
-    null
-  );
-  const [selectedChapter, setSelectedChapter] = useLocalStorage(
-    STORAGE_KEYS.CHAPTER,
-    null
-  );
+  const [selectedLevel, setSelectedLevel] = useLocalStorage(STORAGE_KEYS.LEVEL, null);
+  const [selectedChapter, setSelectedChapter] = useLocalStorage(STORAGE_KEYS.CHAPTER, null);
 
   const value = {
     showRomaji,

@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && cp -r public/images out/",
-    "prebuild": "mkdir -p out/images",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "pack": "npx repopack"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^5.4.1",

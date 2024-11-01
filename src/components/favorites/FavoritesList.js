@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Trash2 } from "lucide-react";
-import { format } from "date-fns";
 
 export function FavoritesList() {
   const [favorites, setFavorites] = useState([]);
@@ -23,11 +22,9 @@ export function FavoritesList() {
     try {
       const response = await fetch(`/api/favorites?userId=${user.uid}`);
       const data = await response.json();
-
       if (response.ok) {
-        setFavorites(data.favorites);
-      } else {
-        throw new Error(data.error);
+        // Use the data as-is without sorting
+        setFavorites(data.favorites || []);
       }
     } catch (error) {
       console.error("Error fetching favorites:", error);
@@ -39,7 +36,6 @@ export function FavoritesList() {
 
   const handleRemoveFavorite = async (kanji) => {
     try {
-      // Show confirmation dialog
       if (
         !confirm("Are you sure you want to remove this kanji from favorites?")
       ) {
@@ -56,8 +52,7 @@ export function FavoritesList() {
       );
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to remove favorite");
+        throw new Error("Failed to remove favorite");
       }
 
       // Remove from local state
@@ -65,10 +60,7 @@ export function FavoritesList() {
         prev.filter((f) => f.character !== kanji.character)
       );
     } catch (error) {
-      console.error("Error removing favorite:", error);
       setError("Failed to remove favorite");
-
-      // Show error message briefly
       setTimeout(() => setError(null), 3000);
     }
   };
@@ -94,9 +86,7 @@ export function FavoritesList() {
       </div>
 
       {error && (
-        <div className="p-4 text-red-700 bg-red-100 rounded-lg transition-opacity">
-          {error}
-        </div>
+        <div className="p-4 text-red-700 bg-red-100 rounded-lg">{error}</div>
       )}
 
       {favorites.length === 0 ? (
@@ -108,14 +98,10 @@ export function FavoritesList() {
           {favorites.map((kanji) => (
             <Card key={kanji.character} className="relative group">
               <CardContent className="p-4">
-                <div
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 
-                              transition-opacity"
-                >
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleRemoveFavorite(kanji)}
-                    className="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 
-                             rounded transition-colors"
+                    className="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                     title="Remove from favorites"
                   >
                     <Trash2 size={16} />
@@ -130,9 +116,6 @@ export function FavoritesList() {
                     ? kanji.meanings.join(", ")
                     : kanji.meanings}
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Added: {format(new Date(kanji.dateAdded), "PP")}
-                </p>
               </CardContent>
             </Card>
           ))}

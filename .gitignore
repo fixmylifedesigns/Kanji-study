@@ -79,6 +79,9 @@ web_modules/
 .env.production.local
 .env.local
 
+# repopack
+repopack-output.txt
+
 android/app/google-services.json
 
 # parcel-bundler cache (https://parceljs.org/)

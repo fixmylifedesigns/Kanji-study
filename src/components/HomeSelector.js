@@ -1,7 +1,7 @@
 // src/components/HomeSelector.js
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import Image from "next/image";
 import { ChevronDown, Shuffle } from "lucide-react";
 import { StudyMode } from "./study/StudyMode";
@@ -23,48 +23,48 @@ const HomeSelector = ({ kanjiData }) => {
   }, [selectedLevel, kanjiData.levels]);
 
   // Default to single level if only one exists
-  useEffect(() => {
+  React.useEffect(() => {
     if (kanjiData.levels.length === 1 && !selectedLevel) {
       handleLevelChange(kanjiData.levels[0].id);
     }
-  }, [kanjiData.levels]);
+  }, [kanjiData.levels, selectedLevel]);
 
   // Default to single chapter if only one exists
-  useEffect(() => {
+  React.useEffect(() => {
     if (chapters.length === 1 && !selectedChapter) {
       handleChapterChange(chapters[0].chapter_number.toString());
     }
-  }, [chapters]);
+  }, [chapters, selectedChapter]);
 
-  const handleLevelChange = (levelId) => {
+  const handleLevelChange = useCallback((levelId) => {
     setSelectedLevel(levelId);
     setSelectedChapter(null); // Reset chapter when level changes
-  };
+  }, [setSelectedLevel, setSelectedChapter]);
 
-  const handleChapterChange = (chapterNumber) => {
+  const handleChapterChange = useCallback((chapterNumber) => {
     setSelectedChapter(chapterNumber);
-  };
+  }, [setSelectedChapter]);
 
-  const handleRandomChapter = () => {
+  const handleRandomChapter = useCallback(() => {
     const availableLevels = kanjiData.levels.filter(
       level => level.chapters.length > 0
     );
     if (availableLevels.length === 0) return;
 
-    const randomLevel = availableLevels[
-      Math.floor(Math.random() * availableLevels.length)
-    ];
-    const randomChapter = randomLevel.chapters[
-      Math.floor(Math.random() * randomLevel.chapters.length)
-    ];
+    // Select random level and chapter
+    const levelIndex = Math.floor(Math.random() * availableLevels.length);
+    const randomLevel = availableLevels[levelIndex];
+    const chapterIndex = Math.floor(Math.random() * randomLevel.chapters.length);
+    const randomChapter = randomLevel.chapters[chapterIndex];
 
     setSelectedLevel(randomLevel.id);
     setSelectedChapter(randomChapter.chapter_number.toString());
-  };
+  }, [kanjiData.levels, setSelectedLevel, setSelectedChapter]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="w-64 h-64 mx-auto mb-8 relative animate-fade-in">
+    <div className="bg-gray-100 p-4">
+      {/* Logo */}
+      <div className="w-64 h-64 mx-auto mb-8 relative">
         <Image
           src="/images/kanji-study-logo.png"
           alt="Kanji Study Logo"
@@ -74,6 +74,8 @@ const HomeSelector = ({ kanjiData }) => {
           priority
         />
       </div>
+
+      {/* Selection UI */}
       <div className="max-w-md mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-center">Welcome to Kanji Study</h1>
         <p className="text-gray-600 text-center">
@@ -119,6 +121,7 @@ const HomeSelector = ({ kanjiData }) => {
           </div>
         )}
 
+        {/* Random Chapter Button */}
         <button
           onClick={handleRandomChapter}
           className="w-full p-4 bg-blue-500 text-white rounded-lg shadow flex items-center justify-center gap-2 hover:bg-blue-600"
@@ -126,10 +129,11 @@ const HomeSelector = ({ kanjiData }) => {
           <Shuffle size={20} />
           <span>Random Chapter</span>
         </button>
+
         <StudyMode />
       </div>
     </div>
   );
-};
+}
 
 export default HomeSelector;

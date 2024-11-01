@@ -1,38 +1,47 @@
+// src/hooks/useLocalStorage.js
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 export function useLocalStorage(key, initialValue) {
-  // Initialize state lazily to avoid issues during SSR
+  // Initialize state with a function to avoid unnecessary localStorage access
   const [storedValue, setStoredValue] = useState(() => {
+    if (typeof window === "undefined") {
+      return initialValue;
+    }
+
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
+      if (!item || item === "undefined") {
+        return initialValue;
+      }
+      return JSON.parse(item);
+    } catch {
       return initialValue;
     }
   });
 
-  useEffect(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      setStoredValue(item ? JSON.parse(item) : initialValue);
-    } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
-    }
-  }, [key, initialValue]); // Removed `initialValue` from dependency array
+  // Memoize the setValue function to avoid recreating it on every render
+  const setValue = useCallback(
+    (value) => {
+      try {
+        const valueToStore =
+          value instanceof Function ? value(storedValue) : value;
+        setStoredValue(valueToStore);
 
-  const setValue = (value) => {
-    try {
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
-    }
-  };
+        if (typeof window !== "undefined") {
+          if (valueToStore === undefined) {
+            window.localStorage.removeItem(key);
+          } else {
+            window.localStorage.setItem(key, JSON.stringify(valueToStore));
+          }
+        }
+      } catch (error) {
+        console.warn(`Error setting localStorage key "${key}":`, error);
+      }
+    },
+    [key, storedValue]
+  );
 
   return [storedValue, setValue];
 }

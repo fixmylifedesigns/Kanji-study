@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      isolation: {
+        isolate: 'isolate',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

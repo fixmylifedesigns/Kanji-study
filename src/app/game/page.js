@@ -1,39 +1,14 @@
 // src/app/game/page.js
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { kanjiData } from "@/data/kanjiData";
 import { useSettings } from "@/context/SettingsContext";
 
-/**
- * Generates 4 unique kanji choices, including the correct answer
- * @param {Array} kanjiList - Full list of available kanji
- * @param {string} correctKanji - The correct kanji that must be included
- * @returns {Array} Array of exactly 4 unique kanji characters
- */
-function generateChoices(kanjiList, correctKanji) {
-  // Create a set with the correct answer
-  const choices = new Set([correctKanji]);
-
-  // Keep adding random kanji until we have exactly 4 choices
-  while (choices.size < 4) {
-    const randomKanji =
-      kanjiList[Math.floor(Math.random() * kanjiList.length)].kanji;
-    choices.add(randomKanji);
-  }
-
-  // Convert to array and shuffle
-  return shuffleArray([...choices]);
-}
-
-/**
- * Fisher-Yates shuffle algorithm for randomizing array elements
- * @param {Array} array - Array to be shuffled
- * @returns {Array} New shuffled array
- */
 function shuffleArray(array) {
+  // Create a copy to avoid mutating the original array
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -53,7 +28,7 @@ export default function GamePage() {
   const [wrongAnswer, setWrongAnswer] = useState(null);
   const [correctAnswer, setCorrectAnswer] = useState(null);
 
-  // Get current chapter data from selected level and chapter
+  // Get current chapter data using memo
   const currentChapter = useMemo(() => {
     if (!selectedLevel || !selectedChapter) return null;
     const level = kanjiData.levels.find((l) => l.id === selectedLevel);
@@ -62,65 +37,52 @@ export default function GamePage() {
     );
   }, [selectedLevel, selectedChapter]);
 
-  // Initialize game when chapter is loaded
+  // Initialize game on chapter change
   React.useEffect(() => {
-    if (currentChapter) {
-      startGame(currentChapter.kanji_list);
+    if (currentChapter?.kanji_list?.length) {
+      const initialKanji = currentChapter.kanji_list[0];
+      const initialChoices = generateChoices(currentChapter.kanji_list, initialKanji.kanji);
+      setCurrentQuestion({
+        kanji: initialKanji.kanji,
+        hiragana: initialKanji.readings[0].hiragana,
+        meaning: initialKanji.meaning,
+      });
+      setChoices(initialChoices);
     }
   }, [currentChapter]);
 
-  const shakeAnimation = `
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-5px); }
-      40%, 80% { transform: translateX(5px); }
+  const generateChoices = useCallback((kanjiList, correctKanji) => {
+    const choices = new Set([correctKanji]);
+    const availableKanji = kanjiList.map(k => k.kanji).filter(k => k !== correctKanji);
+    
+    while (choices.size < 4 && availableKanji.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableKanji.length);
+      choices.add(availableKanji[randomIndex]);
+      availableKanji.splice(randomIndex, 1);
     }
-  `;
 
-  const getRandomQuestion = (kanjiList) => {
-    const randomKanji = kanjiList[Math.floor(Math.random() * kanjiList.length)];
-    const randomReading =
-      randomKanji.readings[
-        Math.floor(Math.random() * randomKanji.readings.length)
-      ];
+    return shuffleArray([...choices]);
+  }, []);
 
-    return {
-      kanji: randomKanji.kanji,
-      hiragana: randomReading.hiragana,
-      example: randomReading.example,
-      meaning: randomKanji.meaning,
-    };
-  };
-
-  const startGame = (kanjiList) => {
-    const newQuestion = getRandomQuestion(kanjiList);
-    const newChoices = generateChoices(kanjiList, newQuestion.kanji);
-
-    setCurrentQuestion(newQuestion);
-    setChoices(newChoices);
-    setScore(0);
-    setTotalAttempts(0);
-    setWrongAnswer(null);
-    setCorrectAnswer(null);
-  };
-
-  const handleAnswer = (selectedKanji) => {
+  const handleAnswer = useCallback((selectedKanji) => {
     setTotalAttempts((prev) => prev + 1);
 
-    if (selectedKanji === currentQuestion.kanji) {
+    if (selectedKanji === currentQuestion?.kanji) {
       setScore((prev) => prev + 1);
       setCorrectAnswer(selectedKanji);
 
       // Set up next question after delay
       setTimeout(() => {
         if (currentChapter?.kanji_list) {
-          const newQuestion = getRandomQuestion(currentChapter.kanji_list);
-          const newChoices = generateChoices(
-            currentChapter.kanji_list,
-            newQuestion.kanji
-          );
-
-          setCurrentQuestion(newQuestion);
+          const nextKanjiIndex = Math.floor(Math.random() * currentChapter.kanji_list.length);
+          const nextKanji = currentChapter.kanji_list[nextKanjiIndex];
+          const newChoices = generateChoices(currentChapter.kanji_list, nextKanji.kanji);
+          
+          setCurrentQuestion({
+            kanji: nextKanji.kanji,
+            hiragana: nextKanji.readings[0].hiragana,
+            meaning: nextKanji.meaning,
+          });
           setChoices(newChoices);
           setCorrectAnswer(null);
         }
@@ -131,9 +93,9 @@ export default function GamePage() {
         setWrongAnswer(null);
       }, 820);
     }
-  };
+  }, [currentQuestion, currentChapter, generateChoices]);
 
-  // Return for no chapter selected remains the same...
+  // Show message if no chapter selected
   if (!currentChapter || !currentQuestion) {
     return (
       <main className="min-h-screen bg-gray-100">
@@ -157,9 +119,8 @@ export default function GamePage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <style>{shakeAnimation}</style>
       <div className="flex flex-col h-screen">
-        {/* Score Section - Top */}
+        {/* Score Section */}
         <div className="p-4 bg-white shadow-sm">
           <div className="text-center">
             <div className="text-2xl font-bold">
@@ -171,7 +132,7 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Question Section - Middle */}
+        {/* Question Section */}
         <div className="flex-grow p-4 flex flex-col justify-center">
           <div className="text-center space-y-6">
             <div className="text-3xl">Match this reading:</div>
@@ -181,14 +142,10 @@ export default function GamePage() {
             <div className="text-2xl text-gray-600 mb-4">
               ({currentQuestion.meaning})
             </div>
-            <div className="text-lg">{currentQuestion.example?.hiragana}</div>
-            <div className="text-lg text-gray-600">
-              {currentQuestion.example?.english}
-            </div>
           </div>
         </div>
 
-        {/* Choices Section - Bottom */}
+        {/* Choices Section */}
         <div className="p-4 pb-28 bg-white shadow-lg">
           <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
             {choices.map((kanji) => (
@@ -197,27 +154,15 @@ export default function GamePage() {
                 onClick={() => handleAnswer(kanji)}
                 className={`
                   py-8 text-5xl border-2 rounded-xl transition-colors relative
-                  active:scale-95 transform
-                  ${
-                    wrongAnswer === kanji
-                      ? "animate-[shake_0.8s_ease-in-out] bg-red-50 border-red-300"
-                      : correctAnswer === kanji
-                      ? "bg-green-50 border-green-300"
-                      : "bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                  ${wrongAnswer === kanji 
+                    ? "bg-red-50 border-red-300" 
+                    : correctAnswer === kanji
+                    ? "bg-green-50 border-green-300"
+                    : "bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300"
                   }
                 `}
-                style={{
-                  animation:
-                    wrongAnswer === kanji ? "shake 0.8s ease-in-out" : "none",
-                }}
               >
                 {kanji}
-                {wrongAnswer === kanji && (
-                  <div className="absolute inset-0 bg-red-500 opacity-20 rounded-xl" />
-                )}
-                {correctAnswer === kanji && (
-                  <div className="absolute inset-0 bg-green-500 opacity-20 rounded-xl" />
-                )}
               </button>
             ))}
           </div>
