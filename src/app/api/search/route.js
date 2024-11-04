@@ -1,32 +1,32 @@
 // src/app/api/search/route.js
 import { NextResponse } from "next/server";
-import NextCors from "nextjs-cors";
 
-export const dynamic = "force-static";
+export const dynamic = 'force-static';
 export const revalidate = false;
 
 export async function GET(request) {
-  // Apply CORS headers
-  await NextCors(request, NextResponse.next(), {
-    methods: ["GET"],
-    origin: "*", // Set to "*" or specify the origin(s) allowed
-    optionsSuccessStatus: 200,
-  });
+  const headers = new Headers();
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle preflight OPTIONS request
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers });
+  }
 
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q");
 
     if (!query) {
-      return NextResponse.json(
+      return new NextResponse.json(
         { error: "Query parameter is required" },
-        { status: 400 }
+        { status: 400, headers }
       );
     }
 
-    const url = `https://jisho.org/api/v1/search/words/?keyword=${encodeURIComponent(
-      query
-    )}`;
+    const url = `https://jisho.org/api/v1/search/words/?keyword=${encodeURIComponent(query)}`;
 
     const response = await fetch(url, {
       headers: {
@@ -40,12 +40,12 @@ export async function GET(request) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, { headers });
   } catch (error) {
     console.error("Error in Jisho API route:", error);
     return NextResponse.json(
       { error: "Failed to fetch data from Jisho", details: error.message },
-      { status: 500 }
+      { status: 500, headers }
     );
   }
 }
