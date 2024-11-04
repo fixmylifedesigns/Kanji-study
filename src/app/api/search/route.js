@@ -1,9 +1,6 @@
 // src/app/api/search/route.js
 import { NextResponse } from "next/server";
 
-export const dynamic = 'force-static';
-export const revalidate = false;
-
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
