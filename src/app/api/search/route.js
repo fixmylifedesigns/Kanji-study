@@ -1,7 +1,18 @@
 // src/app/api/search/route.js
 import { NextResponse } from "next/server";
+import NextCors from "nextjs-cors";
+
+export const dynamic = "force-static";
+export const revalidate = false;
 
 export async function GET(request) {
+  // Apply CORS headers
+  await NextCors(request, NextResponse.next(), {
+    methods: ["GET"],
+    origin: "*", // Set to "*" or specify the origin(s) allowed
+    optionsSuccessStatus: 200,
+  });
+
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q");
@@ -13,7 +24,6 @@ export async function GET(request) {
       );
     }
 
-    // Correct URL format with keyword parameter
     const url = `https://jisho.org/api/v1/search/words/?keyword=${encodeURIComponent(
       query
     )}`;
