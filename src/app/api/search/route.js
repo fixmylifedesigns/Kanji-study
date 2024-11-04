@@ -5,28 +5,21 @@ export const dynamic = 'force-static';
 export const revalidate = false;
 
 export async function GET(request) {
-  const headers = new Headers();
-  headers.set("Access-Control-Allow-Origin", "*");
-  headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-  headers.set("Access-Control-Allow-Headers", "Content-Type");
-
-  // Handle preflight OPTIONS request
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers });
-  }
-
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q");
 
     if (!query) {
-      return new NextResponse.json(
+      return NextResponse.json(
         { error: "Query parameter is required" },
-        { status: 400, headers }
+        { status: 400 }
       );
     }
 
-    const url = `https://jisho.org/api/v1/search/words/?keyword=${encodeURIComponent(query)}`;
+    // Correct URL format with keyword parameter
+    const url = `https://jisho.org/api/v1/search/words/?keyword=${encodeURIComponent(
+      query
+    )}`;
 
     const response = await fetch(url, {
       headers: {
@@ -40,12 +33,12 @@ export async function GET(request) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data, { headers });
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error in Jisho API route:", error);
     return NextResponse.json(
       { error: "Failed to fetch data from Jisho", details: error.message },
-      { status: 500, headers }
+      { status: 500 }
     );
   }
 }
