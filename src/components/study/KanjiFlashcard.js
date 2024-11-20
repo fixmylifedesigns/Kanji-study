@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useKanji } from "@/context/KanjiContext";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
-import kanjiData from "@/data/kanjiData.json"; // For default deck
+import kanjiData from "@/data/kanjiData.js"; // For default deck
 
 export function KanjiFlashcard({ showRomaji = true, deck }) {
   const [currentIndex, setCurrentIndex] = useState(0);
