@@ -1,0 +1,36 @@
+{
+  "chapters": [
+    {
+      "chapter_number": 2,
+      "chapter_title": "Calendar",
+      "kanji_list": [
+        {
+          "kanji": "月",
+          "meaning": "Month",
+          "readings": [
+            {
+              "hiragana": "げつ",
+              "romaji": "getsu",
+              "reading_type": "onyomi",
+              "example": {
+                "japanese": "月曜日は学校に行きます。",
+                "hiragana": "げつようびはがっこうにいきます。",
+                "english": "I go to school on Monday."
+              }
+            },
+            {
+              "hiragana": "つき",
+              "romaji": "tsuki",
+              "reading_type": "kunyomi",
+              "example": {
+                "japanese": "空には美しい月が見えます。",
+                "hiragana": "そらにはうつくしいつきがみえます。",
+                "english": "A beautiful moon can be seen in the sky."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
