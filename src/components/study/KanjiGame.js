@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useKanji } from "@/context/KanjiContext";
 import { useAuth } from "@/context/AuthContext";
-import kanjiData from "@/data/kanjiData.json"; // For default deck
+import kanjiData from "@/data/kanjiData.js"; // For default deck
 
 export function KanjiGame({ showRomaji = true, deck }) {
   const [currentQuestion, setCurrentQuestion] = useState(null);
