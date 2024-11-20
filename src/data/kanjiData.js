@@ -1,5 +1,11 @@
-import kanji from ".kanjiData.json"
+import chapterOne from "./chapterOne.json
 
-export const kanjiData = () => {
-  return kanji
-}
+export const kanjiData = {
+  levels: [
+    {
+      id: "n5",
+      name: "JLPT N5",
+      chapters: [...chapterOne.chapters, ...chapterTwo.chapters]
+    }
+  ]
+};
