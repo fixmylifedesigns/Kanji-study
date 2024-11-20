@@ -1,0 +1,90 @@
+{
+  "chapters": [
+    {
+      "chapter_number": 1,
+      "chapter_title": "Number",
+      "kanji_list": [
+        {
+          "kanji": "一",
+          "meaning": "One",
+          "readings": [
+            {
+              "hiragana": "いち",
+              "romaji": "ichi",
+              "example_sentence": "私は 一つ りんごを食べました。",
+              "full_hiragana": "わたしは ひとつ りんごをたべました。",
+              "english_translation": "I ate one apple."
+            },
+            {
+              "hiragana": "ひとつ",
+              "romaji": "hitotsu",
+              "example_sentence": "ひとつ りんごがあります。",
+              "full_hiragana": "ひとつ りんごがあります。",
+              "english_translation": "There is one apple."
+            }
+          ]
+        },
+        {
+          "kanji": "二",
+          "meaning": "Two",
+          "readings": [
+            {
+              "hiragana": "に",
+              "romaji": "ni",
+              "example_sentence": "私は 二つ りんごを食べました。",
+              "full_hiragana": "わたしは ふたつ りんごをたべました。",
+              "english_translation": "I ate two apples."
+            },
+            {
+              "hiragana": "ふたつ",
+              "romaji": "futatsu",
+              "example_sentence": "ふたつ りんごがあります。",
+              "full_hiragana": "ふたつ りんごがあります。",
+              "english_translation": "There are two apples."
+            }
+          ]
+        },
+        {
+          "kanji": "三",
+          "meaning": "Three",
+          "readings": [
+            {
+              "hiragana": "さん",
+              "romaji": "san",
+              "example_sentence": "私は 三つ りんごを食べました。",
+              "full_hiragana": "わたしは みっつ りんごをたべました。",
+              "english_translation": "I ate three apples."
+            },
+            {
+              "hiragana": "みっつ",
+              "romaji": "mittsu",
+              "example_sentence": "みっつ りんごがあります。",
+              "full_hiragana": "みっつ りんごがあります。",
+              "english_translation": "There are three apples."
+            }
+          ]
+        },
+        {
+          "kanji": "四",
+          "meaning": "Four",
+          "readings": [
+            {
+              "hiragana": "し",
+              "romaji": "shi",
+              "example_sentence": "私は 四つ りんごを食べました。",
+              "full_hiragana": "わたしは よっつ りんごをたべました。",
+              "english_translation": "I ate four apples."
+            },
+            {
+              "hiragana": "よっつ",
+              "romaji": "yottsu",
+              "example_sentence": "よっつ りんごがあります。",
+              "full_hiragana": "よっつ りんごがあります。",
+              "english_translation": "There are four apples."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
