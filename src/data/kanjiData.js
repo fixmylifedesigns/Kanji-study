@@ -7,6 +7,11 @@ export const kanjiData = {
       id: "n5",
       name: "JLPT N5",
       chapters: [...chapterOne.chapters, ...chapterTwo.chapters]
+    },
+    {
+      id: "n4",
+      name: "JLPT N4",
+      chapters: [...chapterOne.chapters, ...chapterTwo.chapters]
     }
   ]
 };
