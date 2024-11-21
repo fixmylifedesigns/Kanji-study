@@ -1,5 +1,5 @@
-import chapterOne from "./chapterOne.json;
-import chapterTwo from "./chapterTwo.json;
+import chapterOne from "./ChapterOne.json;
+import chapterTwo from "./ChapterTwo.json;
   
 export const kanjiData = {
   levels: [
